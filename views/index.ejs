@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Location Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script defer src="/script.js"></script>
+</head>
+<body>
+    <h1>Live Location Tracker</h1>
+    <div id="map" style="height: 500px;"></div>
+    <script>
+        var map = L.map('map').setView([20, 78], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var markers = {};
+        var socket = io();
+
+        socket.on("broadcastLocation", (users) => {
+            for (let id in users) {
+                let user = users[id];
+                if (markers[id]) {
+                    markers[id].setLatLng([user.latitude, user.longitude]);
+                } else {
+                    markers[id] = L.marker([user.latitude, user.longitude]).addTo(map);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
