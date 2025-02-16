@@ -22,15 +22,25 @@
         var socket = io();
 
         socket.on("broadcastLocation", (users) => {
-            for (let id in users) {
-                let user = users[id];
-                if (markers[id]) {
-                    markers[id].setLatLng([user.latitude, user.longitude]);
-                } else {
-                    markers[id] = L.marker([user.latitude, user.longitude]).addTo(map);
+        for (let id in users) {
+            let user = users[id];
+
+            // If a new user is detected, add a marker
+            if (!markers[id]) {
+                markers[id] = L.marker([user.latitude, user.longitude]).addTo(map)
+                    .bindPopup(`User ${id}`).openPopup();
+            } else {
+                // Update position if user already exists
+                markers[id].setLatLng([user.latitude, user.longitude]);
+            }
+        }
+        for (let id in markers) {
+                if (!users[id]) {
+                    map.removeLayer(markers[id]);
+                    delete markers[id];
                 }
             }
-        });
+    });
     </script>
 </body>
 </html>

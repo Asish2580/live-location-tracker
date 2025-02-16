@@ -15,6 +15,8 @@ let users = {}; // Store user locations
 io.on("connection", (socket) => {
     console.log("New user connected: " + socket.id);
 
+    socket.emit("broadcastLocation", users);
+    
     socket.on("updateLocation", (data) => {
         users[socket.id] = data;
         io.emit("broadcastLocation", users);
